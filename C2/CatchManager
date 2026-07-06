@@ -1,0 +1,44 @@
+local Players = game:GetService("Players")
+local Teams = game:GetService("Teams")
+
+local policeTeam = Teams:WaitForChild("Police")
+local prisonerTeam = Teams:WaitForChild("Prisoners")
+local jail = workspace:WaitForChild("Jail")
+
+local function connectPrompt(prisoner, character)
+
+	local root = character:WaitForChild("HumanoidRootPart")
+	local prompt = root:WaitForChild("CatchPrompt")
+	prompt.Triggered:Connect(function(police)
+
+		-- Only police can catch
+		if police.Team ~= policeTeam then
+			return
+		end
+
+		-- Make sure the target is a prisoner
+		if prisoner.Team ~= prisonerTeam then
+			return
+		end
+
+		-- Give the police a point
+		police.leaderstats.Points.Value += 1
+
+		-- Send the prisoner to jail
+		root.CFrame = jail.CFrame
+
+	end)
+
+end
+
+Players.PlayerAdded:Connect(function(player)
+
+	player.CharacterAdded:Connect(function(character)
+
+		if player.Team == prisonerTeam then
+			connectPrompt(player, character)
+		end
+
+	end)
+
+end)
