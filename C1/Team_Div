@@ -1,7 +1,8 @@
 -- ====================
--- C2: Team Assignment
+-- C1: Team Appearance & Catch Prompt
+-- Roblox handles team assignment using AutoAssignable
 -- ====================
---script is no longer required for team assignment. In the team properties, just select Auto-Assign to true! Write this code instead for assigning "costumes" to the default rig
+
 local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
 
@@ -51,9 +52,34 @@ local function applyTeamColors(player)
 	end
 end
 
+local function updateCatchPrompt(player, character)
+	local root = character:WaitForChild("HumanoidRootPart")
+
+	local prompt = root:FindFirstChild("CatchPrompt")
+
+	if player.Team == prisonerTeam then
+		if not prompt then
+			prompt = Instance.new("ProximityPrompt")
+			prompt.Name = "CatchPrompt"
+			prompt.ActionText = "Catch"
+			prompt.ObjectText = "Prisoner"
+			prompt.MaxActivationDistance = 8
+			prompt.HoldDuration = 0
+			prompt.RequiresLineOfSight = false
+			prompt.Parent = root
+		end
+	else
+		if prompt then
+			prompt:Destroy()
+		end
+	end
+end
+
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function(character)
 		task.wait()
+
 		applyTeamColors(player)
+		updateCatchPrompt(player, character)
 	end)
 end)
