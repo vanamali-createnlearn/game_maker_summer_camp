@@ -1,20 +1,19 @@
 --We need to remove prompts being able to be clicked by the prisoners. this local script will do just that
 --Add this in the StarterPlayerScripts
-
+--dont worry if the script looks different from the one in the video tutorial, I had to update it because the previous version in the video was a little inconsistent.
 local Players = game:GetService("Players")
-task.wait()
 local player = Players.LocalPlayer
-if player.Team.Name == "Prisoners" then
-	for _, otherPlayer in ipairs(Players:GetPlayers()) do
-		local character = otherPlayer.Character
-		if character then
-			local root = character:FindFirstChild("HumanoidRootPart")
-			if root then
-				local prompt = root:FindFirstChild("CatchPrompt")
-				if prompt then
-					prompt.Enabled = false
-				end
-			end
-		end
+if player.Team.Name ~= "Prisoners" then
+	return
+end
+local function hidePrompt(character)
+	local root = character:WaitForChild("HumanoidRootPart")
+	local prompt = root:WaitForChild("CatchPrompt")
+	prompt.Enabled = false
+end
+for _, otherPlayer in ipairs(Players:GetPlayers()) do
+	if otherPlayer.Character then
+		hidePrompt(otherPlayer.Character)
 	end
+	otherPlayer.CharacterAdded:Connect(hidePrompt)
 end
