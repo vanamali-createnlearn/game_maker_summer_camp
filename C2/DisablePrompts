@@ -1,0 +1,20 @@
+--We need to remove prompts being able to be clicked by the prisoners. this local script will do just that
+--Add this in the StarterPlayerScripts
+
+local Players = game:GetService("Players")
+task.wait()
+local player = Players.LocalPlayer
+if player.Team.Name == "Prisoners" then
+	for _, otherPlayer in ipairs(Players:GetPlayers()) do
+		local character = otherPlayer.Character
+		if character then
+			local root = character:FindFirstChild("HumanoidRootPart")
+			if root then
+				local prompt = root:FindFirstChild("CatchPrompt")
+				if prompt then
+					prompt.Enabled = false
+				end
+			end
+		end
+	end
+end
