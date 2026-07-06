@@ -1,32 +1,59 @@
 -- ====================
 -- C2: Team Assignment
 -- ====================
+--script is no longer required for team assignment. In the team properties, just select Auto-Assign to true! Write this code instead for assigning "costumes" to the default rig
 local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
 
-local prisonerTeam = Teams:FindFirstChild("Prisoners")
-local policeTeam = Teams:FindFirstChild("Police")
+local prisonerTeam = Teams:WaitForChild("Prisoners")
+local policeTeam = Teams:WaitForChild("Police")
+
+-- Body color definitions
+local PrisonerColors = {
+	LeftLegColor = BrickColor.new("Neon orange"),
+	RightLegColor = BrickColor.new("Neon orange"),
+	LeftArmColor = BrickColor.new("Neon orange"),
+	RightArmColor = BrickColor.new("Neon orange"),
+	HeadColor = BrickColor.new("Pastel brown"),
+	TorsoColor = BrickColor.new("TGA brown"),
+}
+
+local PoliceColors = {
+	LeftLegColor = BrickColor.new("Black"),
+	RightLegColor = BrickColor.new("Black"),
+	LeftArmColor = BrickColor.new("Storm blue"),
+	RightArmColor = BrickColor.new("Storm blue"),
+	TorsoColor = BrickColor.new("Storm blue"),
+	HeadColor = BrickColor.new("Pastel brown"),
+}
+
+local function applyTeamColors(player)
+	local character = player.Character
+	if not character then return end
+
+	local bodyColors = character:FindFirstChildOfClass("BodyColors")
+
+	if not bodyColors then
+		bodyColors = Instance.new("BodyColors")
+		bodyColors.Parent = character
+	end
+
+	local colorsToUse
+
+	if player.Team == prisonerTeam then
+		colorsToUse = PrisonerColors
+	else
+		colorsToUse = PoliceColors
+	end
+
+	for partName, color in pairs(colorsToUse) do
+		bodyColors[partName] = color
+	end
+end
 
 Players.PlayerAdded:Connect(function(player)
-	if not (prisonerTeam and policeTeam) then
-		warn("Teams not found!")
-		return
-	end
-
-	-- Balanced assignment
-	local prisonerCount = #prisonerTeam:GetPlayers()
-	local policeCount = #policeTeam:GetPlayers()
-
-	if prisonerCount < policeCount then
-		player.Team = prisonerTeam
-	elseif policeCount < prisonerCount then
-		player.Team = policeTeam
-	else
-		player.Team = (math.random(1,2) == 1) and prisonerTeam or policeTeam
-	end
-
-	player.TeamColor = player.Team.TeamColor
+	player.CharacterAdded:Connect(function(character)
+		task.wait()
+		applyTeamColors(player)
+	end)
 end)
-
-
-
