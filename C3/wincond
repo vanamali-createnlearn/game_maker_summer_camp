@@ -1,0 +1,54 @@
+local Players = game:GetService("Players")
+local Teams = game:GetService("Teams")
+
+local prisonerTeam = Teams:WaitForChild("Prisoners")
+local policeTeam = Teams:WaitForChild("Police")
+
+local WIN_POINTS = 4
+local gameOver = false
+
+local function checkWinner()
+
+	if gameOver then
+		return
+	end
+
+	local prisonerPoints = 0
+	local policePoints = 0
+
+	for _, player in ipairs(Players:GetPlayers()) do
+
+		if player:FindFirstChild("leaderstats") then
+
+			local points = player.leaderstats:FindFirstChild("Points")
+
+			if points then
+
+				if player.Team == prisonerTeam then
+					prisonerPoints += points.Value
+				elseif player.Team == policeTeam then
+					policePoints += points.Value
+				end
+
+			end
+
+		end
+
+	end
+
+	if prisonerPoints >= WIN_POINTS then
+		gameOver = true
+		print("Prisoners Win!")
+	elseif policePoints >= WIN_POINTS then
+		gameOver = true
+		print("Police Win!")
+	end
+
+end
+
+Players.PlayerAdded:Connect(function(player)
+
+	player:WaitForChild("leaderstats")
+	player.leaderstats:WaitForChild("Points").Changed:Connect(checkWinner)
+
+end)
