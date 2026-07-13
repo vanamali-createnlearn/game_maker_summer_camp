@@ -1,0 +1,26 @@
+local Teams = game:GetService("Teams")
+local Players = game:GetService("Players")
+
+local prisonerTeam = Teams:WaitForChild("Prisoners")
+local jail = workspace:WaitForChild("Jail")
+
+local debounce = {}
+
+script.Parent.Touched:Connect(function(hit)
+
+	local character = hit.Parent
+	local player = Players:GetPlayerFromCharacter(character)
+
+	if not player then return end
+	if player.Team ~= prisonerTeam then return end
+	if debounce[player] then return end
+
+	debounce[player] = true
+
+	player.leaderstats.Points.Value += 1
+	character:MoveTo(jail.Position)
+
+	task.wait(1)
+	debounce[player] = nil
+
+end)
